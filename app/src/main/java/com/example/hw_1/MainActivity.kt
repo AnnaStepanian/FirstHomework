@@ -1,10 +1,10 @@
 package com.example.hw_1
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,60 +16,24 @@ class MainActivity : AppCompatActivity() {
         val resultTextView = findViewById<TextView>(R.id.result_text_view)
 
         showButton.setOnClickListener {
-            val input = inputText.text.toString().toInt()
+            val input = inputText.text.toString().toLong()
             val longForm = convertToLongForm(input)
             resultTextView.text = longForm
             Toast.makeText(this, longForm, Toast.LENGTH_SHORT).show()
         }
     }
-    private val LESS_THAN_20 = arrayOf("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
+    private val ONES = arrayOf("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
     private val TENS = arrayOf("", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
-    fun convertToLongForm(num: Int): String {
-        if (num == 0) return "zero"
 
-        val billion = num / 1000000000
-        val million = (num - billion * 1000000000) / 1000000
-        val thousand = (num - billion * 1000000000 - million * 1000000) / 1000
-        val hundred = (num - billion * 1000000000 - million * 1000000 - thousand * 1000) / 100
-        val rest = num - billion * 1000000000 - million * 1000000 - thousand * 1000 - hundred * 100
-
-        var result = ""
-        if (billion != 0) {
-            result = convertToLongForm(billion) + " billion"
-        }
-        if (million != 0) {
-            if (result.isNotEmpty()) {
-                result += " "
-            }
-            result += convertToLongForm(million) + " million"
-        }
-        if (thousand != 0) {
-            if (result.isNotEmpty()) {
-                result += " "
-            }
-            result += convertToLongForm(thousand) + " thousand"
-        }
-        if (hundred != 0) {
-            if (result.isNotEmpty()) {
-                result += " "
-            }
-            result += convertToLongForm(hundred) + " hundred"
-        }
-        if (rest != 0) {
-            if (result.isNotEmpty()) {
-                result += " "
-            }
-            if (rest < 20) {
-                result += LESS_THAN_20[rest]
-            } else {
-                result += TENS[rest / 10]
-                if (rest % 10 != 0) {
-                    result += " " + LESS_THAN_20[rest % 10]
-                }
-            }
-        }
-        return result
+    fun convertToLongForm(num: Long): String {
+        if (num < 0) return "minus " + convertToLongForm(-num)
+        if (num < 20) return ONES[num.toInt()]
+        if (num < 100) return TENS[num.toInt() / 10] + (if (num.toInt() % 10 == 0) "" else " " + ONES[num.toInt() % 10])
+        if (num < 1000) return ONES[num.toInt() / 100] + " hundred " + convertToLongForm(num % 100)
+        if (num < 1000000) return convertToLongForm(num / 1000) + " thousand " + convertToLongForm(num % 1000)
+        if (num < 1000000000) return convertToLongForm(num / 1000000) + " million " + convertToLongForm(num % 1000000)
+        if (num < 1000000000000L) return convertToLongForm(num / 1000000000) + " billion " + convertToLongForm(num % 1000000000)
+        return "Too large"
     }
-
 }
-
